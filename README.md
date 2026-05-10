@@ -1,10 +1,20 @@
 # 🔪 ONNX Model Surgery
 
+<div align="center">
+
 **Visual inspection, pruning, patching, and optimization toolkit for ONNX models.**
+
+[![CI](https://github.com/Luv-Goel/onnx-model-surgery/actions/workflows/ci.yml/badge.svg)](https://github.com/Luv-Goel/onnx-model-surgery/actions/workflows/ci.yml)
+[![Python](https://img.shields.io/badge/python-3.10%20|%203.11%20|%203.12-blue?logo=python)](https://github.com/Luv-Goel/onnx-model-surgery)
+[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+[![GitHub stars](https://img.shields.io/github/stars/Luv-Goel/onnx-model-surgery?style=social)](https://github.com/Luv-Goel/onnx-model-surgery/stargazers)
+[![PyPI](https://img.shields.io/badge/pypi-v0.1.0-orange)](https://pypi.org/project/onnx-model-surgery/)
+
+</div>
 
 No API keys. No cloud. Just your model, a terminal, and some surgical tools.
 
-```
+```bash
 pip install onnx-model-surgery
 onnx-surgery info model.onnx
 onnx-surgery graph model.onnx

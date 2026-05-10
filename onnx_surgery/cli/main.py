@@ -19,11 +19,24 @@ from ..tools.prune import prune_nodes, strip_initializers, prune_by_threshold
 from ..tools.export import export, validate as validate_model, optimize
 
 
+VERSION = "0.1.0"
+
+
 def main():
     parser = argparse.ArgumentParser(
         prog="onnx-surgery",
         description="Visual ONNX model inspection, editing, and debugging toolkit",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  onnx-surgery info model.onnx              # Full model summary
+  onnx-surgery graph model.onnx              # ASCII graph
+  onnx-surgery prune model.onnx --op-types Dropout  # Remove ops
+  onnx-surgery strip model.onnx -o clean.onnx       # Strip + optimize
+  onnx-surgery validate model.onnx                  # Check validity
+        """,
     )
+    parser.add_argument("--version", action="version", version=f"%(prog)s {VERSION}")
     sub = parser.add_subparsers(dest="command")
 
     # ── info ──
