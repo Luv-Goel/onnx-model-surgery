@@ -22,7 +22,7 @@ import argparse
 import sys
 from pathlib import Path
 
-from ..core import load_model, model_summary, ascii_graph, op_stats
+from ..core import load_model, ascii_graph, op_stats
 from ..tools.inspect import inspect, to_json
 from ..tools.prune import prune_nodes, strip_initializers, prune_by_threshold
 from ..tools.export import export, validate as validate_model, optimize
@@ -249,7 +249,7 @@ Examples:
             result = strip_initializers(model)
             result = optimize(result, level=args.optimize)
             path = export(result, args.output)
-            print(f"  Stripped initializers, removed Identity nodes.")
+            print("  Stripped initializers, removed Identity nodes.")
             print(f"  {OK} {path}")
         except Exception as e:
             print(f" {FAIL} Strip failed: {e}", file=sys.stderr)

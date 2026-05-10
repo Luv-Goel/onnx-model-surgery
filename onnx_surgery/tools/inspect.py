@@ -1,6 +1,6 @@
 """Inspection tools — pretty-print model structure and stats."""
 
-from onnx import ModelProto, TensorProto
+from onnx import ModelProto
 import json
 from ..core.model_loader import model_summary, list_nodes, list_inputs, list_outputs, list_initializers
 from ..core.visualization import ascii_graph, op_stats

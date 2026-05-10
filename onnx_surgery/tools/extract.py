@@ -2,7 +2,6 @@
 
 from onnx import ModelProto, helper
 from ..core.graph import SurgeryGraph
-from ..core.model_loader import load_model
 
 
 def extract_subgraph(model: ModelProto, input_names: list[str],

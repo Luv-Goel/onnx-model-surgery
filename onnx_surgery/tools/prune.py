@@ -40,7 +40,6 @@ def prune_nodes(model: ModelProto, node_indices: list[int] | None = None,
 
 def strip_initializers(model: ModelProto, keep_names: set[str] | None = None) -> ModelProto:
     """Remove unused initializers (weights not connected to any node)."""
-    from onnx import helper as onnx_helper
     used = set()
     for n in model.graph.node:
         for inp in n.input:

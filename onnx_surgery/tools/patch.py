@@ -1,7 +1,6 @@
 """Operation patching — replace or modify individual ONNX nodes."""
 
-from onnx import ModelProto, helper, NodeProto
-from typing import Callable
+from onnx import ModelProto, helper
 from ..core.graph import SurgeryGraph
 
 
@@ -92,7 +91,7 @@ def insert_node(model: ModelProto, after_node_index: int,
                 inputs: list[str], outputs: list[str]) -> ModelProto:
     """Insert a new node after an existing node in the graph."""
     from ..core.graph import GraphNode
-    new_node_node = GraphNode(
+    GraphNode(
         index=after_node_index + 1,
         name=name,
         op_type=op_type,

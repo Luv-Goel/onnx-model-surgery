@@ -6,8 +6,7 @@ enabling node insertion, removal, reconnection, and subgraph extraction.
 
 from collections import defaultdict, deque
 from dataclasses import dataclass, field
-from typing import Callable
-from onnx import ModelProto, NodeProto, helper
+from onnx import ModelProto, helper
 
 
 @dataclass

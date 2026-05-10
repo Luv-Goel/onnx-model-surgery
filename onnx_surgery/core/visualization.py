@@ -43,7 +43,7 @@ def ascii_graph(model: ModelProto | SurgeryGraph, max_nodes: int = 50) -> str:
             lines.append(f"  | {node.name:<36} |")
         lines.append(f"  | in:  {short_in:<32} |")
         lines.append(f"  | out: {short_out:<32} |")
-        lines.append(f"  +------------------------------------+")
+        lines.append("  +------------------------------------+")
 
         if i < len(nodes) - 1:
             lines.append("       |")

@@ -2,7 +2,6 @@
 
 from onnx import ModelProto
 from pathlib import Path
-from ..core.model_loader import load_model
 
 
 def export(model: ModelProto, path: str | Path) -> str:

@@ -3,8 +3,6 @@
 from onnx import ModelProto
 from ..core.model_loader import model_summary, list_nodes, list_inputs, list_outputs, list_initializers
 from .flops import estimate_flops, format_flops, format_params
-from ..core.visualization import op_stats
-from ..core.graph import SurgeryGraph
 import json
 
 
@@ -26,7 +24,7 @@ def generate_html_report(model: ModelProto, title: str = "ONNX Model Report") ->
     flops_data = estimate_flops(model)
 
     # Graph as JSON for visualization
-    graph_data = _graph_to_json(model)
+    _graph_to_json(model)
 
     html = f"""<!DOCTYPE html>
 <html lang="en">

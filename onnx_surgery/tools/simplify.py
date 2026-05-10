@@ -1,8 +1,7 @@
 """Model simplification — constant folding, op removal, graph cleanup."""
 
-from onnx import ModelProto, helper, TensorProto
+from onnx import ModelProto, TensorProto
 import numpy as np
-from ..core.graph import SurgeryGraph
 from .export import optimize
 
 
@@ -49,10 +48,8 @@ def simplify(model: ModelProto, fold_constants: bool = True,
 
 def _remove_noop_casts(model: ModelProto) -> ModelProto:
     """Remove Cast operations where input/output dtypes match."""
-    import onnx
     graph = model.graph
 
-    noop_casts = []
     for i, node in enumerate(graph.node):
         if node.op_type != "Cast":
             continue

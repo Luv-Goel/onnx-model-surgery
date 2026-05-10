@@ -1,7 +1,7 @@
 """FLOPs, MACs, and parameter count estimation for ONNX models."""
 
 from onnx import ModelProto
-from ..core.model_loader import model_summary, list_initializers
+from ..core.model_loader import model_summary
 
 
 # Estimated FLOPs per operation type (multiply-add = 2 FLOPs)
@@ -38,8 +38,7 @@ def estimate_flops(model: ModelProto) -> dict:
         - flops_by_op: per-op-type breakdown
         - op_details: per-node breakdown
     """
-    summary = model_summary(model)
-    graph = model.graph
+    model_summary(model)
 
     # Build shape map from ValueInfo
     shape_map = {}
