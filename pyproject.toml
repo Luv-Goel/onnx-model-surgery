@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "onnx-model-surgery"
 version = "0.2.0"
-description = "Visual ONNX model inspection, pruning, patching, and optimization toolkit"
+description = "Visual ONNX model inspection, pruning, patching, quantization, and optimization toolkit. 15+ CLI commands for production model surgery."
 readme = "README.md"
 license = {file = "LICENSE"}
 authors = [
@@ -38,6 +38,9 @@ dev = [
     "pytest>=7.0",
     "pytest-cov>=4.0",
     "ruff>=0.3.0",
+]
+quant = [
+    "onnxruntime>=1.16",
 ]
 
 [project.urls]
