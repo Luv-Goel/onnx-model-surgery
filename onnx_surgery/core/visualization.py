@@ -59,7 +59,7 @@ def ascii_graph(model: ModelProto | SurgeryGraph, max_nodes: int = 50) -> str:
         lines.append(f"  📤 {out}")
 
     lines.append("")
-    lines.append(f"  ({len(model.nodes) if isinstance(model, ModelProto) else len(graph.nodes)} nodes total)")
+    lines.append(f"  ({len(model.graph.node) if isinstance(model, ModelProto) else len(graph.nodes)} nodes total)")
 
     return "\n".join(lines)
 
