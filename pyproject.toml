@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.backends._legacy:_Backend"
+
+[project]
+name = "onnx-model-surgery"
+version = "0.1.0"
+description = "Visual ONNX model inspection, editing, and debugging toolkit"
+readme = "README.md"
+license = {file = "LICENSE"}
+authors = [
+    {name = "Luv-Goel"}
+]
+requires-python = ">=3.10"
+dependencies = [
+    "onnx>=1.15",
+    "numpy>=1.24",
+    "rich>=13.0",
+]
+
+[project.optional-dependencies]
+viz = [
+    "graphviz>=0.20",
+]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+]
+
+[project.scripts]
+onnx-surgery = "onnx_surgery.cli.main:main"
+
+[tool.setuptools.packages.find]
+include = ["onnx_surgery*"]
