@@ -5,11 +5,23 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "onnx-model-surgery"
 version = "0.1.0"
-description = "Visual ONNX model inspection, editing, and debugging toolkit"
+description = "Visual ONNX model inspection, pruning, patching, and optimization toolkit"
 readme = "README.md"
 license = {file = "LICENSE"}
 authors = [
-    {name = "Luv-Goel"}
+    {name = "Luv-Goel"},
+]
+keywords = ["onnx", "machine-learning", "deep-learning", "model-optimization", "cli"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 requires-python = ">=3.10"
 dependencies = [
@@ -25,7 +37,13 @@ viz = [
 dev = [
     "pytest>=7.0",
     "pytest-cov>=4.0",
+    "ruff>=0.3.0",
 ]
+
+[project.urls]
+Homepage = "https://github.com/Luv-Goel/onnx-model-surgery"
+Repository = "https://github.com/Luv-Goel/onnx-model-surgery"
+"Bug Tracker" = "https://github.com/Luv-Goel/onnx-model-surgery/issues"
 
 [project.scripts]
 onnx-surgery = "onnx_surgery.cli.main:main"
