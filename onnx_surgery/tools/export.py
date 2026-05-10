@@ -21,10 +21,12 @@ def export(model: ModelProto, path: str | Path) -> str:
     path.parent.mkdir(parents=True, exist_ok=True)
 
     import onnx
+
     onnx.save(model, str(path))
 
     size = path.stat().st_size
     from .inspect import human_size
+
     return f"Saved to {path} ({human_size(size)})"
 
 
@@ -41,7 +43,10 @@ def validate(model: ModelProto) -> list[str]:
 
     issues = []
     try:
-        with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+        with (
+            contextlib.redirect_stdout(io.StringIO()),
+            contextlib.redirect_stderr(io.StringIO()),
+        ):
             onnx.checker.check_model(model)
     except ValidationError as e:
         issues.append(str(e))
@@ -65,12 +70,15 @@ def optimize(model: ModelProto, level: str = "basic") -> ModelProto:
         return model
 
     import copy
+
     opt = copy.deepcopy(model)
     graph = opt.graph
 
     if level in ("basic", "extended"):
         # Remove identity nodes
-        identity_indices = [i for i, n in enumerate(graph.node) if n.op_type == "Identity"]
+        identity_indices = [
+            i for i, n in enumerate(graph.node) if n.op_type == "Identity"
+        ]
         renamed_inputs = {}
         for idx in reversed(identity_indices):
             node = graph.node[idx]
@@ -85,7 +93,9 @@ def optimize(model: ModelProto, level: str = "basic") -> ModelProto:
                         n.input[i] = renamed_inputs[inp]
 
             # Remove identity nodes
-            remaining = [n for i, n in enumerate(graph.node) if i not in identity_indices]
+            remaining = [
+                n for i, n in enumerate(graph.node) if i not in identity_indices
+            ]
             graph.ClearField("node")
             graph.node.extend(remaining)
 

@@ -2,7 +2,13 @@
 
 from onnx import ModelProto
 import json
-from ..core.model_loader import model_summary, list_nodes, list_inputs, list_outputs, list_initializers
+from ..core.model_loader import (
+    model_summary,
+    list_nodes,
+    list_inputs,
+    list_outputs,
+    list_initializers,
+)
 from ..core.visualization import ascii_graph, op_stats
 
 
@@ -22,7 +28,9 @@ def inspect(model: ModelProto, detailed: bool = False) -> str:
     lines.append(f"  ONNX Model: {summary['graph_name'] or 'untitled'}")
     lines.append("=" * 56)
     lines.append(f"  IR version:     v{summary['ir_version']}")
-    lines.append(f"  Producer:        {summary['producer_name']} {summary['producer_version']}")
+    lines.append(
+        f"  Producer:        {summary['producer_name']} {summary['producer_version']}"
+    )
     lines.append(f"  Opsets:          {summary['opset_imports']}")
     lines.append("")
     lines.append(f"  Nodes:           {summary['node_count']}")
@@ -30,7 +38,7 @@ def inspect(model: ModelProto, detailed: bool = False) -> str:
     lines.append(f"  Outputs:         {summary['output_count']}")
     lines.append(f"  Parameters:      {summary['parameter_count']}")
     lines.append(f"  Op types used:   {', '.join(summary['op_types'][:20])}")
-    if len(summary['op_types']) > 20:
+    if len(summary["op_types"]) > 20:
         lines.append(f"                   ... and {len(summary['op_types']) - 20} more")
     lines.append("")
 
@@ -39,14 +47,18 @@ def inspect(model: ModelProto, detailed: bool = False) -> str:
         lines.append("  Inputs")
         lines.append("-" * 56)
         for inp in list_inputs(model):
-            lines.append(f"  {inp['name']:<30} {str(inp.get('shape', '?')):<20} {inp.get('dtype', '?')}")
+            lines.append(
+                f"  {inp['name']:<30} {str(inp.get('shape', '?')):<20} {inp.get('dtype', '?')}"
+            )
         lines.append("")
 
         lines.append("-" * 56)
         lines.append("  Outputs")
         lines.append("-" * 56)
         for out in list_outputs(model):
-            lines.append(f"  {out['name']:<30} {str(out.get('shape', '?')):<20} {out.get('dtype', '?')}")
+            lines.append(
+                f"  {out['name']:<30} {str(out.get('shape', '?')):<20} {out.get('dtype', '?')}"
+            )
         lines.append("")
 
         lines.append("-" * 56)
@@ -67,8 +79,14 @@ def inspect(model: ModelProto, detailed: bool = False) -> str:
         init_list = list_initializers(model)
         if init_list:
             for init in init_list[:30]:
-                shape_str = "×".join(str(s) for s in init["shape"]) if init["shape"] else "scalar"
-                lines.append(f"  {init['name']:<35} {init['dtype']:<10} {shape_str:<20} {human_size(init['size_bytes'])}")
+                shape_str = (
+                    "×".join(str(s) for s in init["shape"])
+                    if init["shape"]
+                    else "scalar"
+                )
+                lines.append(
+                    f"  {init['name']:<35} {init['dtype']:<10} {shape_str:<20} {human_size(init['size_bytes'])}"
+                )
             if len(init_list) > 30:
                 lines.append(f"  ... and {len(init_list) - 30} more")
         else:
@@ -91,9 +109,9 @@ def human_size(bytes_count: int) -> str:
     """Convert byte count to human-readable string."""
     if bytes_count < 1024:
         return f"{bytes_count} B"
-    elif bytes_count < 1024 ** 2:
+    elif bytes_count < 1024**2:
         return f"{bytes_count / 1024:.1f} KB"
-    elif bytes_count < 1024 ** 3:
-        return f"{bytes_count / 1024 ** 2:.1f} MB"
+    elif bytes_count < 1024**3:
+        return f"{bytes_count / 1024**2:.1f} MB"
     else:
-        return f"{bytes_count / 1024 ** 3:.2f} GB"
+        return f"{bytes_count / 1024**3:.2f} GB"

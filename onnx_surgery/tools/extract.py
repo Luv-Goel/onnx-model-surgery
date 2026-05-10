@@ -4,8 +4,9 @@ from onnx import ModelProto, helper
 from ..core.graph import SurgeryGraph
 
 
-def extract_subgraph(model: ModelProto, input_names: list[str],
-                     output_names: list[str]) -> ModelProto:
+def extract_subgraph(
+    model: ModelProto, input_names: list[str], output_names: list[str]
+) -> ModelProto:
     """Extract a subgraph between specified input and output tensors.
 
     Args:
@@ -107,7 +108,9 @@ def extract_subgraph(model: ModelProto, input_names: list[str],
         for inp in node.input:
             used_initializers.add(inp)
 
-    kept_inits = [init for init in model.graph.initializer if init.name in used_initializers]
+    kept_inits = [
+        init for init in model.graph.initializer if init.name in used_initializers
+    ]
     new_graph.ClearField("initializer")
     for init in kept_inits:
         new_graph.initializer.append(init)

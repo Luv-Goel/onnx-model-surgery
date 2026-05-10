@@ -4,13 +4,16 @@ from onnx import ModelProto, helper
 from ..core.graph import SurgeryGraph
 
 
-def replace_node(model: ModelProto, node_index: int,
-                 new_op_type: str | None = None,
-                 new_inputs: list[str] | None = None,
-                 new_outputs: list[str] | None = None,
-                 new_name: str | None = None,
-                 new_domain: str | None = None,
-                 attributes: dict | None = None) -> ModelProto:
+def replace_node(
+    model: ModelProto,
+    node_index: int,
+    new_op_type: str | None = None,
+    new_inputs: list[str] | None = None,
+    new_outputs: list[str] | None = None,
+    new_name: str | None = None,
+    new_domain: str | None = None,
+    attributes: dict | None = None,
+) -> ModelProto:
     """Replace a single node in the model with a new configuration.
 
     Args:
@@ -48,7 +51,7 @@ def replace_node(model: ModelProto, node_index: int,
                     break
             new_node.attribute.append(attr)
 
-    graph.nodes[node_index] = type('', (), {})()  # dummy placeholder
+    graph.nodes[node_index] = type("", (), {})()  # dummy placeholder
     # Rebuild
     new_graph = SurgeryGraph.from_model(model)
     new_graph.nodes[node_index] = SurgeryGraph._node_from_proto(new_node)
@@ -86,11 +89,17 @@ def rename_tensors(model: ModelProto, rename_map: dict[str, str]) -> ModelProto:
     return new_model
 
 
-def insert_node(model: ModelProto, after_node_index: int,
-                op_type: str, name: str,
-                inputs: list[str], outputs: list[str]) -> ModelProto:
+def insert_node(
+    model: ModelProto,
+    after_node_index: int,
+    op_type: str,
+    name: str,
+    inputs: list[str],
+    outputs: list[str],
+) -> ModelProto:
     """Insert a new node after an existing node in the graph."""
     from ..core.graph import GraphNode
+
     GraphNode(
         index=after_node_index + 1,
         name=name,

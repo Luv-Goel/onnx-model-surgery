@@ -38,22 +38,26 @@ def diff(model_a: ModelProto, model_b: ModelProto) -> dict:
     nodes_added = []
     for name in sorted(added):
         n = nodes_b[name]
-        nodes_added.append({
-            "name": name,
-            "op_type": n["op_type"],
-            "inputs": n["inputs"],
-            "outputs": n["outputs"],
-        })
+        nodes_added.append(
+            {
+                "name": name,
+                "op_type": n["op_type"],
+                "inputs": n["inputs"],
+                "outputs": n["outputs"],
+            }
+        )
 
     nodes_removed = []
     for name in sorted(removed):
         n = nodes_a[name]
-        nodes_removed.append({
-            "name": name,
-            "op_type": n["op_type"],
-            "inputs": n["inputs"],
-            "outputs": n["outputs"],
-        })
+        nodes_removed.append(
+            {
+                "name": name,
+                "op_type": n["op_type"],
+                "inputs": n["inputs"],
+                "outputs": n["outputs"],
+            }
+        )
 
     nodes_changed = []
     for name in sorted(common):
@@ -86,8 +90,14 @@ def diff(model_a: ModelProto, model_b: ModelProto) -> dict:
             op_dist_diff[op] = (ca, cb)
 
     # Input/output changes
-    inputs_a = {v.name: str(v.type.tensor_type.shape) if v.type.HasField("tensor_type") else "?" for v in model_a.graph.input}
-    inputs_b = {v.name: str(v.type.tensor_type.shape) if v.type.HasField("tensor_type") else "?" for v in model_b.graph.input}
+    inputs_a = {
+        v.name: str(v.type.tensor_type.shape) if v.type.HasField("tensor_type") else "?"
+        for v in model_a.graph.input
+    }
+    inputs_b = {
+        v.name: str(v.type.tensor_type.shape) if v.type.HasField("tensor_type") else "?"
+        for v in model_b.graph.input
+    }
     input_diff = {}
     all_inputs = set(inputs_a.keys()) | set(inputs_b.keys())
     for name in sorted(all_inputs):
@@ -96,8 +106,14 @@ def diff(model_a: ModelProto, model_b: ModelProto) -> dict:
         if va != vb:
             input_diff[name] = (va, vb)
 
-    outputs_a = {v.name: str(v.type.tensor_type.shape) if v.type.HasField("tensor_type") else "?" for v in model_a.graph.output}
-    outputs_b = {v.name: str(v.type.tensor_type.shape) if v.type.HasField("tensor_type") else "?" for v in model_b.graph.output}
+    outputs_a = {
+        v.name: str(v.type.tensor_type.shape) if v.type.HasField("tensor_type") else "?"
+        for v in model_a.graph.output
+    }
+    outputs_b = {
+        v.name: str(v.type.tensor_type.shape) if v.type.HasField("tensor_type") else "?"
+        for v in model_b.graph.output
+    }
     output_diff = {}
     all_outputs = set(outputs_a.keys()) | set(outputs_b.keys())
     for name in sorted(all_outputs):
@@ -125,10 +141,18 @@ def format_diff(result: dict) -> str:
     lines.append("=" * 56)
     lines.append("  ONNX Model Diff")
     lines.append("=" * 56)
-    lines.append(f"  Nodes:       {s['nodes'][0]} -> {s['nodes'][1]} ({s['nodes'][1] - s['nodes'][0]:+d})")
-    lines.append(f"  Inputs:      {s['inputs'][0]} -> {s['inputs'][1]} ({s['inputs'][1] - s['inputs'][0]:+d})")
-    lines.append(f"  Outputs:     {s['outputs'][0]} -> {s['outputs'][1]} ({s['outputs'][1] - s['outputs'][0]:+d})")
-    lines.append(f"  Parameters:  {s['parameters'][0]} -> {s['parameters'][1]} ({s['parameters'][1] - s['parameters'][0]:+d})")
+    lines.append(
+        f"  Nodes:       {s['nodes'][0]} -> {s['nodes'][1]} ({s['nodes'][1] - s['nodes'][0]:+d})"
+    )
+    lines.append(
+        f"  Inputs:      {s['inputs'][0]} -> {s['inputs'][1]} ({s['inputs'][1] - s['inputs'][0]:+d})"
+    )
+    lines.append(
+        f"  Outputs:     {s['outputs'][0]} -> {s['outputs'][1]} ({s['outputs'][1] - s['outputs'][0]:+d})"
+    )
+    lines.append(
+        f"  Parameters:  {s['parameters'][0]} -> {s['parameters'][1]} ({s['parameters'][1] - s['parameters'][0]:+d})"
+    )
     lines.append("")
 
     if result["nodes_added"]:
@@ -166,9 +190,16 @@ def format_diff(result: dict) -> str:
         for name, (va, vb) in result["output_diff"].items():
             lines.append(f"    {name}: {va} -> {vb}")
 
-    if not any([result["nodes_added"], result["nodes_removed"],
-                result["nodes_changed"], result["op_dist_diff"],
-                result["input_diff"], result["output_diff"]]):
+    if not any(
+        [
+            result["nodes_added"],
+            result["nodes_removed"],
+            result["nodes_changed"],
+            result["op_dist_diff"],
+            result["input_diff"],
+            result["output_diff"],
+        ]
+    ):
         lines.append("  [OK] Models are structurally identical.")
 
     return "\n".join(lines)

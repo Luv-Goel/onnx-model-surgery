@@ -22,6 +22,8 @@ import argparse
 import sys
 from pathlib import Path
 
+import numpy as np
+
 from ..core import load_model, ascii_graph, op_stats
 from ..tools.inspect import inspect, to_json
 from ..tools.prune import prune_nodes, strip_initializers, prune_by_threshold
@@ -31,6 +33,8 @@ from ..tools.diff import diff, format_diff
 from ..tools.extract import extract_subgraph
 from ..tools.simplify import simplify as simplify_model
 from ..tools.report import generate_html_report
+from ..tools.quantize import quantize_model_file, convert_to_fp16
+from ..tools.diff_report import generate_diff_html
 from ..tools.patch import rename_tensors
 
 
@@ -66,12 +70,16 @@ Examples:
     info_p = sub.add_parser("info", help="Print a detailed model summary")
     info_p.add_argument("model", type=str, help="Path to .onnx file")
     info_p.add_argument("--json", action="store_true", help="Output as JSON")
-    info_p.add_argument("--shapes", action="store_true", help="Include FLOPs/per-tensor shape info")
+    info_p.add_argument(
+        "--shapes", action="store_true", help="Include FLOPs/per-tensor shape info"
+    )
 
     # graph
     graph_p = sub.add_parser("graph", help="Print ASCII graph visualization")
     graph_p.add_argument("model", type=str, help="Path to .onnx file")
-    graph_p.add_argument("--dot", action="store_true", help="Generate Graphviz DOT output")
+    graph_p.add_argument(
+        "--dot", action="store_true", help="Generate Graphviz DOT output"
+    )
 
     # stats
     stats_p = sub.add_parser("stats", help="Print operator type statistics")
@@ -80,17 +88,34 @@ Examples:
     # prune
     prune_p = sub.add_parser("prune", help="Prune nodes from the model")
     prune_p.add_argument("model", type=str, help="Path to .onnx file")
-    prune_p.add_argument("--op-types", nargs="+", help="Remove all nodes matching these op types")
+    prune_p.add_argument(
+        "--op-types", nargs="+", help="Remove all nodes matching these op types"
+    )
     prune_p.add_argument("--keep", type=str, help="Comma-separated node names to keep")
-    prune_p.add_argument("--threshold", type=int, default=0, help="Prune isolated subgraphs below this size")
-    prune_p.add_argument("-o", "--output", type=str, default="pruned.onnx", help="Output path")
+    prune_p.add_argument(
+        "--threshold",
+        type=int,
+        default=0,
+        help="Prune isolated subgraphs below this size",
+    )
+    prune_p.add_argument(
+        "-o", "--output", type=str, default="pruned.onnx", help="Output path"
+    )
 
     # strip
-    strip_p = sub.add_parser("strip", help="Remove unused initializers and identity nodes")
+    strip_p = sub.add_parser(
+        "strip", help="Remove unused initializers and identity nodes"
+    )
     strip_p.add_argument("model", type=str, help="Path to .onnx file")
-    strip_p.add_argument("-o", "--output", type=str, default="stripped.onnx", help="Output path")
-    strip_p.add_argument("--optimize", choices=["none", "basic", "extended"], default="basic",
-                         help="Optimization level (default: basic)")
+    strip_p.add_argument(
+        "-o", "--output", type=str, default="stripped.onnx", help="Output path"
+    )
+    strip_p.add_argument(
+        "--optimize",
+        choices=["none", "basic", "extended"],
+        default="basic",
+        help="Optimization level (default: basic)",
+    )
 
     # validate
     val_p = sub.add_parser("validate", help="Run ONNX checker on the model")
@@ -110,33 +135,88 @@ Examples:
     diff_p.add_argument("model_b", type=str, help="Second .onnx file")
 
     # extract (Feature 3)
-    extract_p = sub.add_parser("extract", help="Extract a subgraph between named tensors")
+    extract_p = sub.add_parser(
+        "extract", help="Extract a subgraph between named tensors"
+    )
     extract_p.add_argument("model", type=str, help="Path to .onnx file")
-    extract_p.add_argument("--from", dest="from_tensors", nargs="+", required=True,
-                           help="Input tensor names for the subgraph")
-    extract_p.add_argument("--to", dest="to_tensors", nargs="+", required=True,
-                           help="Output tensor names for the subgraph")
-    extract_p.add_argument("-o", "--output", type=str, default="subgraph.onnx", help="Output path")
+    extract_p.add_argument(
+        "--from",
+        dest="from_tensors",
+        nargs="+",
+        required=True,
+        help="Input tensor names for the subgraph",
+    )
+    extract_p.add_argument(
+        "--to",
+        dest="to_tensors",
+        nargs="+",
+        required=True,
+        help="Output tensor names for the subgraph",
+    )
+    extract_p.add_argument(
+        "-o", "--output", type=str, default="subgraph.onnx", help="Output path"
+    )
 
     # simplify (Feature 4)
-    simp_p = sub.add_parser("simplify", help="Simplify model: fold constants, remove no-ops")
+    simp_p = sub.add_parser(
+        "simplify", help="Simplify model: fold constants, remove no-ops"
+    )
     simp_p.add_argument("model", type=str, help="Path to .onnx file")
     simp_p.add_argument("--no-fold", action="store_true", help="Skip constant folding")
-    simp_p.add_argument("--fuse-bn", action="store_true", help="Fuse BatchNormalization into Conv")
-    simp_p.add_argument("-o", "--output", type=str, default="simplified.onnx", help="Output path")
+    simp_p.add_argument(
+        "--fuse-bn", action="store_true", help="Fuse BatchNormalization into Conv"
+    )
+    simp_p.add_argument(
+        "-o", "--output", type=str, default="simplified.onnx", help="Output path"
+    )
 
     # report (Feature 5)
     report_p = sub.add_parser("report", help="Generate a standalone HTML report")
     report_p.add_argument("model", type=str, help="Path to .onnx file")
-    report_p.add_argument("-o", "--output", type=str, default="model_report.html", help="Output HTML path")
-    report_p.add_argument("--title", type=str, default="ONNX Model Report", help="Report title")
+    report_p.add_argument(
+        "-o", "--output", type=str, default="model_report.html", help="Output HTML path"
+    )
+    report_p.add_argument(
+        "--title", type=str, default="ONNX Model Report", help="Report title"
+    )
 
     # rename (Feature 6)
     rename_p = sub.add_parser("rename", help="Bulk rename tensors in a model")
     rename_p.add_argument("model", type=str, help="Path to .onnx file")
-    rename_p.add_argument("--map", nargs="+", required=True,
-                          help="Rename mappings: old:new old:new ...")
-    rename_p.add_argument("-o", "--output", type=str, default="renamed.onnx", help="Output path")
+    rename_p.add_argument(
+        "--map", nargs="+", required=True, help="Rename mappings: old:new old:new ..."
+    )
+    rename_p.add_argument(
+        "-o", "--output", type=str, default="renamed.onnx", help="Output path"
+    )
+
+    # quantize (Feature 7)
+    quant_p = sub.add_parser("quantize", help="Quantize model to FP16 or INT8")
+    quant_p.add_argument("model", type=str, help="Path to .onnx file")
+    quant_p.add_argument(
+        "--mode",
+        choices=["fp16", "int8", "int8-dynamic", "int8-static"],
+        default="fp16",
+        help="Quantization mode (default: fp16)",
+    )
+    quant_p.add_argument(
+        "--calibrate",
+        type=str,
+        default=None,
+        help="Path to calibration data .npz for static INT8",
+    )
+    quant_p.add_argument("-o", "--output", type=str, default=None, help="Output path")
+
+    # diff-report (Feature 8)
+    dr_p = sub.add_parser("diff-report", help="Generate interactive HTML diff report")
+    dr_p.add_argument("model_a", type=str, help="First .onnx file")
+    dr_p.add_argument("model_b", type=str, help="Second .onnx file")
+    dr_p.add_argument(
+        "-o", "--output", type=str, default="model_diff.html", help="Output HTML path"
+    )
+    dr_p.add_argument(
+        "--title", type=str, default="ONNX Model Diff Report", help="Report title"
+    )
 
     args = parser.parse_args()
 
@@ -171,7 +251,10 @@ Examples:
         rename_map = {}
         for mapping in args.map:
             if ":" not in mapping:
-                print(f" {FAIL} Invalid mapping: {mapping} (expected old:new)", file=sys.stderr)
+                print(
+                    f" {FAIL} Invalid mapping: {mapping} (expected old:new)",
+                    file=sys.stderr,
+                )
                 sys.exit(1)
             old, new = mapping.split(":", 1)
             rename_map[old] = new
@@ -203,9 +286,13 @@ Examples:
             print("-" * 56)
             print(f"  Total FLOPs:  {format_flops(flops_data['total_flops'])}")
             print(f"  Total MACs:   {format_flops(flops_data['total_macs'])}")
-            print(f"  Parameters:   {format_params(flops_data['total_params'])} ({flops_data['params_size_mb']:.1f} MB)")
-            if flops_data['unknown_shapes']:
-                print(f"  {WARN} {flops_data['unknown_shapes']} nodes have unknown shapes")
+            print(
+                f"  Parameters:   {format_params(flops_data['total_params'])} ({flops_data['params_size_mb']:.1f} MB)"
+            )
+            if flops_data["unknown_shapes"]:
+                print(
+                    f"  {WARN} {flops_data['unknown_shapes']} nodes have unknown shapes"
+                )
         else:
             print(inspect(model, detailed=True))
 
@@ -276,16 +363,26 @@ Examples:
         print(f"  Total FLOPs:            {format_flops(flops_data['total_flops'])}")
         print(f"  Total MACs:             {format_flops(flops_data['total_macs'])}")
         print(f"  Total Parameters:       {format_params(flops_data['total_params'])}")
-        print(f"  Parameter Memory:       {flops_data['params_size_mb']:.1f} MB (float32)")
+        print(
+            f"  Parameter Memory:       {flops_data['params_size_mb']:.1f} MB (float32)"
+        )
         print("")
-        if flops_data['flops_by_op']:
+        if flops_data["flops_by_op"]:
             print("  Per-Operator FLOPs:")
-            max_flops = max(flops_data['flops_by_op'].values()) if flops_data['flops_by_op'] else 1
-            for op, count in sorted(flops_data['flops_by_op'].items(), key=lambda x: -x[1]):
+            max_flops = (
+                max(flops_data["flops_by_op"].values())
+                if flops_data["flops_by_op"]
+                else 1
+            )
+            for op, count in sorted(
+                flops_data["flops_by_op"].items(), key=lambda x: -x[1]
+            ):
                 bar = "#" * min(int(count / max_flops * 30) if max_flops else 0, 30)
                 print(f"    {op:<20} {format_flops(count):<12} {bar}")
-        if flops_data['unknown_shapes']:
-            print(f"\n  {WARN} {flops_data['unknown_shapes']} node(s) have unknown shapes - results may be incomplete")
+        if flops_data["unknown_shapes"]:
+            print(
+                f"\n  {WARN} {flops_data['unknown_shapes']} node(s) have unknown shapes - results may be incomplete"
+            )
 
     elif args.command == "extract":
         try:
@@ -325,6 +422,57 @@ Examples:
             print(f"  {OK} HTML report saved to {output_path} ({size:,} bytes)")
         except Exception as e:
             print(f" {FAIL} Report generation failed: {e}", file=sys.stderr)
+            sys.exit(1)
+
+    elif args.command == "quantize":
+        try:
+            model = load_model(args.model)
+            output = args.output or f"{Path(args.model).stem}_{args.mode}.onnx"
+            if args.mode == "fp16":
+                result = convert_to_fp16(model)
+                from onnx import save as onnx_save
+
+                onnx_save(result, output)
+                print("  Converted model to FP16")
+            else:
+                calib_data = None
+                if args.calibrate:
+                    calib_data = np.load(args.calibrate)
+                    calib_data = [dict(calib_data)]
+                result = quantize_model_file(
+                    args.model,
+                    output,
+                    mode=args.mode,
+                    calibration_data=calib_data,
+                )
+                print(f"  Quantized model ({args.mode})")
+            print(f"  {OK} {output}")
+        except ImportError as e:
+            print(f" {FAIL} {e}", file=sys.stderr)
+            sys.exit(1)
+        except Exception as e:
+            print(f" {FAIL} Quantization failed: {e}", file=sys.stderr)
+            sys.exit(1)
+
+    elif args.command == "diff-report":
+        try:
+            model_a = load_model(args.model_a)
+            model_b = load_model(args.model_b)
+        except FileNotFoundError as e:
+            print(f" {FAIL} {e}", file=sys.stderr)
+            sys.exit(1)
+        except Exception as e:
+            print(f" {FAIL} Failed to load model: {e}", file=sys.stderr)
+            sys.exit(1)
+
+        try:
+            html = generate_diff_html(model_a, model_b, title=args.title)
+            output_path = Path(args.output)
+            output_path.write_text(html, encoding="utf-8")
+            size = output_path.stat().st_size
+            print(f"  {OK} HTML diff report saved to {output_path} ({size:,} bytes)")
+        except Exception as e:
+            print(f" {FAIL} Diff report generation failed: {e}", file=sys.stderr)
             sys.exit(1)
 
 

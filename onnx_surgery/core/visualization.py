@@ -59,7 +59,9 @@ def ascii_graph(model: ModelProto | SurgeryGraph, max_nodes: int = 50) -> str:
         lines.append(f"  [OUT] {out}")
 
     lines.append("")
-    lines.append(f"  ({len(model.graph.node) if isinstance(model, ModelProto) else len(graph.nodes)} nodes total)")
+    lines.append(
+        f"  ({len(model.graph.node) if isinstance(model, ModelProto) else len(graph.nodes)} nodes total)"
+    )
 
     return "\n".join(lines)
 
@@ -67,6 +69,7 @@ def ascii_graph(model: ModelProto | SurgeryGraph, max_nodes: int = 50) -> str:
 def op_stats(model: ModelProto) -> str:
     """Return a formatted table of operator type counts."""
     from collections import Counter
+
     op_counts = Counter(n.op_type for n in model.graph.node)
 
     lines = ["Operator Distribution:", "-" * 40]
@@ -131,7 +134,12 @@ def generate_graphviz(model: ModelProto, output_path: str | None = None) -> str 
 
 def _dot_source(model: ModelProto) -> str:
     """Generate raw DOT language string without graphviz dependency."""
-    lines = ['digraph ONNXModel {', '  rankdir=LR;', '  node [shape=box, style="rounded,filled"];', '']
+    lines = [
+        "digraph ONNXModel {",
+        "  rankdir=LR;",
+        '  node [shape=box, style="rounded,filled"];',
+        "",
+    ]
     for i, n in enumerate(model.graph.node):
         name = n.name or f"node_{i}"
         label = f"{n.op_type}\\n({name[:20]})" if n.name else n.op_type
@@ -142,5 +150,5 @@ def _dot_source(model: ModelProto) -> str:
         for inp in n.input:
             if inp:
                 lines.append(f'  "{inp}" -> "{name}";')
-    lines.append('}')
+    lines.append("}")
     return "\n".join(lines)

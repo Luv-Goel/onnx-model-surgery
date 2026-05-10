@@ -5,9 +5,12 @@ import numpy as np
 from .export import optimize
 
 
-def simplify(model: ModelProto, fold_constants: bool = True,
-             remove_identity: bool = True,
-             fuse_bn: bool = False) -> ModelProto:
+def simplify(
+    model: ModelProto,
+    fold_constants: bool = True,
+    remove_identity: bool = True,
+    fuse_bn: bool = False,
+) -> ModelProto:
     """Simplify an ONNX model for inference.
 
     Applies multiple graph-level optimizations:
@@ -83,6 +86,7 @@ def _fold_simple_constants(model: ModelProto) -> ModelProto:
         return model
 
     from copy import deepcopy
+
     new_model = deepcopy(model)
 
     # Replace references in other nodes' inputs
@@ -111,6 +115,7 @@ def _fuse_batch_norm(model: ModelProto) -> ModelProto:
     adjusted weights.
     """
     from copy import deepcopy
+
     new_model = deepcopy(model)
     new_graph = new_model.graph
 
@@ -144,4 +149,5 @@ def _fuse_batch_norm(model: ModelProto) -> ModelProto:
 def _tensor_to_numpy(tensor: TensorProto) -> np.ndarray:
     """Convert an ONNX TensorProto to a numpy array."""
     import onnx.numpy_helper
+
     return onnx.numpy_helper.to_array(tensor)

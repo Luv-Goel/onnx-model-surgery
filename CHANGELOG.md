@@ -41,8 +41,18 @@
 
 ## [Unreleased]
 
-### Planned
+### Added
 
-- ONNX Runtime integration — run models after surgery to verify numeric correctness.
-- Batch surgery mode — apply the same operations to multiple models.
-- Interactive TUI for model browsing.
+- **FP16 quantization** — `onnx-surgery quantize --mode fp16` converts all float32 tensors to float16. Pure ONNX, zero additional dependencies.
+- **INT8 quantization** — `onnx-surgery quantize --mode int8|int8-dynamic|int8-static` for weight-only or weight+activation INT8 quantization via ONNX Runtime backend.
+- **Diff report** — `onnx-surgery diff-report a.onnx b.onnx -o diff.html` generates an interactive standalone HTML page comparing two models with colour-coded tables and bar charts.
+- **.gitattributes** — Proper Git LFS and text/binary detection for ONNX files.
+- **CI improvements** — Added pip caching, code coverage reporting, ruff format check, and Codecov upload to CI pipeline.
+- **quant optional deps** — `pip install onnx-model-surgery[quant]` pulls in onnxruntime for INT8 quantization.
+- **15 CLI commands** — Added `quantize` and `diff-report` (was 13).
+
+### Changed
+
+- Updated project description to reflect quantization and 15+ CLI commands.
+- Improved README with quantization guide, diff report docs, badges, and architecture diagram.
+- Extended `pyproject.toml` with `quant` extras and updated metadata.

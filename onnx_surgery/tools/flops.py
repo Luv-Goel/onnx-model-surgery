@@ -42,7 +42,11 @@ def estimate_flops(model: ModelProto) -> dict:
 
     # Build shape map from ValueInfo
     shape_map = {}
-    for v in list(model.graph.input) + list(model.graph.output) + list(model.graph.value_info):
+    for v in (
+        list(model.graph.input)
+        + list(model.graph.output)
+        + list(model.graph.value_info)
+    ):
         if v.type.HasField("tensor_type"):
             t = v.type.tensor_type
             shape = [d.dim_value for d in t.shape.dim] if t.shape else None
@@ -73,11 +77,13 @@ def estimate_flops(model: ModelProto) -> dict:
 
         if output_shape is None:
             unknown_shapes += 1
-            op_details.append({
-                "name": node.name or f"node_{i}",
-                "op_type": node.op_type,
-                "flops": "unknown",
-            })
+            op_details.append(
+                {
+                    "name": node.name or f"node_{i}",
+                    "op_type": node.op_type,
+                    "flops": "unknown",
+                }
+            )
             continue
 
         flops_fn = _OP_FLOPS_MAP.get(node.op_type)
@@ -88,12 +94,14 @@ def estimate_flops(model: ModelProto) -> dict:
 
         total_flops += flops
         flops_by_op[node.op_type] = flops_by_op.get(node.op_type, 0) + flops
-        op_details.append({
-            "name": node.name or f"node_{i}",
-            "op_type": node.op_type,
-            "output_shape": output_shape,
-            "flops": flops,
-        })
+        op_details.append(
+            {
+                "name": node.name or f"node_{i}",
+                "op_type": node.op_type,
+                "output_shape": output_shape,
+                "flops": flops,
+            }
+        )
 
     param_bytes = total_params * 4  # assume float32
     return {

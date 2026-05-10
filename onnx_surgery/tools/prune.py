@@ -4,8 +4,12 @@ from onnx import ModelProto
 from ..core.graph import SurgeryGraph
 
 
-def prune_nodes(model: ModelProto, node_indices: list[int] | None = None,
-                op_types: list[str] | None = None, keep: bool = False) -> ModelProto:
+def prune_nodes(
+    model: ModelProto,
+    node_indices: list[int] | None = None,
+    op_types: list[str] | None = None,
+    keep: bool = False,
+) -> ModelProto:
     """Remove nodes from an ONNX model.
 
     Args:
@@ -38,7 +42,9 @@ def prune_nodes(model: ModelProto, node_indices: list[int] | None = None,
     return graph.to_model(model)
 
 
-def strip_initializers(model: ModelProto, keep_names: set[str] | None = None) -> ModelProto:
+def strip_initializers(
+    model: ModelProto, keep_names: set[str] | None = None
+) -> ModelProto:
     """Remove unused initializers (weights not connected to any node)."""
     used = set()
     for n in model.graph.node:

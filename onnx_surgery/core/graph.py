@@ -12,6 +12,7 @@ from onnx import ModelProto, helper
 @dataclass
 class GraphNode:
     """Internal representation of a single ONNX graph node."""
+
     index: int
     name: str
     op_type: str
@@ -27,6 +28,7 @@ class SurgeryGraph:
     Maintains adjacency lists and provides methods for common
     graph surgery operations.
     """
+
     nodes: list[GraphNode] = field(default_factory=list)
     inputs: list[str] = field(default_factory=list)
     outputs: list[str] = field(default_factory=list)
@@ -146,7 +148,9 @@ class SurgeryGraph:
         sub.inputs = [n for n in self.inputs if n in self.consumers]
         sub.outputs = self.outputs
         sub.initializers = self.initializers.copy()
-        sub.producers = {k: old_to_new[v] for k, v in self.producers.items() if v in old_to_new}
+        sub.producers = {
+            k: old_to_new[v] for k, v in self.producers.items() if v in old_to_new
+        }
         for name, consumers in self.consumers.items():
             filtered = [c for c in consumers if c in old_to_new]
             if filtered:
