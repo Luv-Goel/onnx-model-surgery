@@ -20,17 +20,17 @@ def ascii_graph(model: ModelProto | SurgeryGraph, max_nodes: int = 50) -> str:
         nodes = nodes[:max_nodes]
 
     lines = []
-    lines.append("╔══════════════════════════════════╗")
-    lines.append("║   ONNX Model Graph (ASCII View)  ║")
-    lines.append("╚══════════════════════════════════╝")
+    lines.append("+==================================+")
+    lines.append("|   ONNX Model Graph (ASCII View)  |")
+    lines.append("+==================================+")
     lines.append("")
 
     # Inputs
     for inp in graph.inputs:
-        lines.append(f"  📥 {inp}")
+        lines.append(f"  [IN] {inp}")
 
-    lines.append("       │")
-    lines.append("       ▼")
+    lines.append("       |")
+    lines.append("       v")
     lines.append("")
 
     # Nodes
@@ -38,25 +38,25 @@ def ascii_graph(model: ModelProto | SurgeryGraph, max_nodes: int = 50) -> str:
         short_in = ", ".join(t[:20] for t in node.inputs[:3])
         short_out = ", ".join(t[:20] for t in node.outputs[:2])
 
-        lines.append(f"  ┌─ {node.op_type} ─────────────────────┐")
+        lines.append(f"  +- {node.op_type} ---------------------+")
         if node.name:
-            lines.append(f"  │ {node.name:<36} │")
-        lines.append(f"  │ in:  {short_in:<32} │")
-        lines.append(f"  │ out: {short_out:<32} │")
-        lines.append(f"  └────────────────────────────────────┘")
+            lines.append(f"  | {node.name:<36} |")
+        lines.append(f"  | in:  {short_in:<32} |")
+        lines.append(f"  | out: {short_out:<32} |")
+        lines.append(f"  +------------------------------------+")
 
         if i < len(nodes) - 1:
-            lines.append("       │")
-            lines.append("       ▼")
+            lines.append("       |")
+            lines.append("       v")
             lines.append("")
 
     # Outputs
     lines.append("")
-    lines.append("       │")
-    lines.append("       ▼")
+    lines.append("       |")
+    lines.append("       v")
     lines.append("")
     for out in graph.outputs:
-        lines.append(f"  📤 {out}")
+        lines.append(f"  [OUT] {out}")
 
     lines.append("")
     lines.append(f"  ({len(model.graph.node) if isinstance(model, ModelProto) else len(graph.nodes)} nodes total)")
@@ -69,9 +69,9 @@ def op_stats(model: ModelProto) -> str:
     from collections import Counter
     op_counts = Counter(n.op_type for n in model.graph.node)
 
-    lines = ["Operator Distribution:", "─" * 40]
+    lines = ["Operator Distribution:", "-" * 40]
     for op, count in sorted(op_counts.items(), key=lambda x: -x[1]):
-        bar = "█" * min(count, 40)
+        bar = "#" * min(count, 40)
         lines.append(f"  {op:<20} {count:>4}  {bar}")
 
     return "\n".join(lines)

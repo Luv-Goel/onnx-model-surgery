@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "onnx-model-surgery"
-version = "0.1.0"
+version = "0.2.0"
 description = "Visual ONNX model inspection, pruning, patching, and optimization toolkit"
 readme = "README.md"
 license = {file = "LICENSE"}

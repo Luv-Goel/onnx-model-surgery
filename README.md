@@ -8,7 +8,7 @@
 [![Python](https://img.shields.io/badge/python-3.10%20|%203.11%20|%203.12-blue?logo=python)](https://github.com/Luv-Goel/onnx-model-surgery)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/Luv-Goel/onnx-model-surgery?style=social)](https://github.com/Luv-Goel/onnx-model-surgery/stargazers)
-[![PyPI](https://img.shields.io/badge/pypi-v0.1.0-orange)](https://pypi.org/project/onnx-model-surgery/)
+[![PyPI](https://img.shields.io/badge/pypi-v0.2.0-orange)](https://pypi.org/project/onnx-model-surgery/)
 
 </div>
 
@@ -38,11 +38,20 @@ This project bridges that gap. Think of it as **a small workbench for dissecting
 
 | Command | What it does |
 |---------|-------------|
+| Command | What it does |
+|---------|-------------|
 | `onnx-surgery info model.onnx` | Full summary: ops, shapes, parameters, graph structure |
+| `onnx-surgery info --shapes model.onnx` | Summary + computational estimates |
 | `onnx-surgery graph model.onnx` | ASCII visualization of the graph topology |
 | `onnx-surgery stats model.onnx` | Operator type frequency table |
+| `onnx-surgery flops model.onnx` | FLOPs, MACs, and parameter count estimation |
 | `onnx-surgery prune model.onnx --op-types Dropout Identity` | Remove specific node types |
 | `onnx-surgery strip model.onnx -o clean.onnx` | Strip unused weights + fold identity nodes |
+| `onnx-surgery simplify model.onnx -o simple.onnx` | Graph simplification (constant folding + identity removal) |
+| `onnx-surgery diff a.onnx b.onnx` | Structural comparison of two models |
+| `onnx-surgery extract model.onnx --from X --to Y -o sub.onnx` | Extract subgraph between tensors |
+| `onnx-surgery rename model.onnx --map old:new -o renamed.onnx` | Bulk rename tensors |
+| `onnx-surgery report model.onnx -o report.html` | Generate standalone HTML report |
 | `onnx-surgery validate model.onnx` | Run the official ONNX checker |
 | `onnx-surgery json model.onnx` | Export everything as JSON for scripting |
 
@@ -142,7 +151,12 @@ onnx-model-surgery/
 │   │   ├── prune.py           # Node removal, weight stripping
 │   │   ├── patch.py           # Operation replacement, tensor renaming
 │   │   ├── inspect.py         # Detailed inspection + JSON export
-│   │   └── export.py          # Save, validate, optimize
+│   │   ├── export.py          # Save, validate, optimize
+│   │   ├── flops.py           # FLOPs and parameter estimation
+│   │   ├── diff.py            # Structural model comparison
+│   │   ├── extract.py         # Subgraph extraction
+│   │   ├── simplify.py        # Graph simplification
+│   │   └── report.py          # HTML report generation
 │   └── cli/
 │       └── main.py            # Click-free argparse CLI
 ├── tests/

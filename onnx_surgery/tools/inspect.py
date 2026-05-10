@@ -35,35 +35,35 @@ def inspect(model: ModelProto, detailed: bool = False) -> str:
     lines.append("")
 
     if detailed:
-        lines.append("─" * 56)
+        lines.append("-" * 56)
         lines.append("  Inputs")
-        lines.append("─" * 56)
+        lines.append("-" * 56)
         for inp in list_inputs(model):
             lines.append(f"  {inp['name']:<30} {str(inp.get('shape', '?')):<20} {inp.get('dtype', '?')}")
         lines.append("")
 
-        lines.append("─" * 56)
+        lines.append("-" * 56)
         lines.append("  Outputs")
-        lines.append("─" * 56)
+        lines.append("-" * 56)
         for out in list_outputs(model):
             lines.append(f"  {out['name']:<30} {str(out.get('shape', '?')):<20} {out.get('dtype', '?')}")
         lines.append("")
 
-        lines.append("─" * 56)
+        lines.append("-" * 56)
         lines.append("  Operator Types")
-        lines.append("─" * 56)
+        lines.append("-" * 56)
         lines.append(op_stats(model))
         lines.append("")
 
-        lines.append("─" * 56)
+        lines.append("-" * 56)
         lines.append("  Graph (ASCII)")
-        lines.append("─" * 56)
+        lines.append("-" * 56)
         lines.append(ascii_graph(model))
         lines.append("")
 
-        lines.append("─" * 56)
+        lines.append("-" * 56)
         lines.append("  Initializers (parameters)")
-        lines.append("─" * 56)
+        lines.append("-" * 56)
         init_list = list_initializers(model)
         if init_list:
             for init in init_list[:30]:

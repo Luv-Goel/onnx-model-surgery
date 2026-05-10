@@ -18,11 +18,31 @@
 
 - Initial release. Nothing to compare against yet.
 
+## [0.2.0] - 2026-05-10
+
+### Added
+
+- **FLOPs & parameter estimation** (`onnx-surgery flops`) — Estimate MACs, FLOPs, total parameters, and memory footprint per operator type with ASCII bar chart.
+- **Model diff** (`onnx-surgery diff a.onnx b.onnx`) — Structural comparison showing added/removed/changed nodes, input/output differences, and operator distribution shifts.
+- **Subgraph extraction** (`onnx-surgery extract --from X --to Y`) — Slice a model between named tensors into a standalone .onnx file.
+- **Graph simplification** (`onnx-surgery simplify`) — Remove Identity nodes, fold constants, optionally fuse BatchNormalization into Conv.
+- **HTML report** (`onnx-surgery report -o report.html`) — Self-contained HTML report with summary cards, operator tags, node tables, FLOPs breakdown, and parameter list.
+- **Tensor renaming** (`onnx-surgery rename --map old:new`) — Bulk rename tensors throughout the entire model via CLI.
+- **Shape-annotated info** (`onnx-surgery info --shapes`) — Enhanced info mode that appends computational estimates to the standard structural report.
+- **CI pipeline** — GitHub Actions running tests on Python 3.10/3.11/3.12 with ruff linting.
+- **Professional metadata** — PyPI classifiers, keywords, project URLs, dev extras (ruff, pytest-cov).
+- **Badges** — CI status, Python version, license, and GitHub stars badges in README.
+
+### Changed
+
+- Refactored CLI to support 13 subcommands total (was 7).
+- All CLI output now uses ASCII-safe characters for Windows compatibility.
+- `pyproject.toml` now has full setuptools build metadata.
+
 ## [Unreleased]
 
 ### Planned
 
-- Shape inference pass — annotate every tensor with inferred shapes.
-- ONNX Runtime integration — run models after surgery to verify correctness.
+- ONNX Runtime integration — run models after surgery to verify numeric correctness.
 - Batch surgery mode — apply the same operations to multiple models.
-- Web demo — minimal Streamlit UI for visual inspection.
+- Interactive TUI for model browsing.
