@@ -100,12 +100,8 @@ def _fold_simple_constants(model: ModelProto) -> ModelProto:
                 # For now, mark this for future implementation
                 pass
 
-    # Remove Constant nodes since we've "folded" them (conceptually)
-    remaining = [n for n in new_model.graph.node if n.op_type != "Constant"]
-    new_model.graph.ClearField("node")
-    new_model.graph.node.extend(remaining)
-
-    return new_model
+    # TODO: implement actual constant folding
+    return model
 
 
 def _fuse_batch_norm(model: ModelProto) -> ModelProto:
@@ -114,36 +110,8 @@ def _fuse_batch_norm(model: ModelProto) -> ModelProto:
     This is a standard inference optimization: Conv + BN → Conv with
     adjusted weights.
     """
-    from copy import deepcopy
-
-    new_model = deepcopy(model)
-    new_graph = new_model.graph
-
-    # Find Conv -> BN patterns
-    conv_bn_pairs = []
-    bn_nodes_by_input = {}
-
-    for i, node in enumerate(new_graph.node):
-        if node.op_type == "BatchNormalization" and node.input:
-            bn_nodes_by_input[node.input[0]] = i
-
-    for i, node in enumerate(new_graph.node):
-        if node.op_type in ("Conv", "ConvTranspose"):
-            for out in node.output:
-                if out in bn_nodes_by_input:
-                    conv_bn_pairs.append((i, bn_nodes_by_input[out]))
-
-    if not conv_bn_pairs:
-        return model
-
     # TODO: actual weight fusion
-    # For now, just remove the BN nodes since they're not needed at inference
-    bn_indices = {idx for _, idx in conv_bn_pairs}
-    remaining = [n for i, n in enumerate(new_graph.node) if i not in bn_indices]
-    new_graph.ClearField("node")
-    new_graph.node.extend(remaining)
-
-    return new_model
+    return model
 
 
 def _tensor_to_numpy(tensor: TensorProto) -> np.ndarray:

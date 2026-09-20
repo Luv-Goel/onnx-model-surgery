@@ -35,9 +35,25 @@
 
 ## Quick Start
 
+### Installation
+
+Install from PyPI:
+
 ```bash
 pip install onnx-model-surgery
+```
 
+For development, install from source:
+
+```bash
+git clone https://github.com/Luv-Goel/onnx-model-surgery.git
+cd onnx-model-surgery
+pip install -e ".[dev]"
+```
+
+### Usage
+
+```bash
 # Show model info
 oms info model.onnx
 
@@ -203,6 +219,14 @@ from onnx_surgery.tools.diff_report import generate_diff_html
 
 model = load_model("model.onnx")
 print(inspect(model, detailed=True))
+```
+
+## Testing
+
+To run the unit tests, use `pytest`:
+
+```bash
+pytest tests/
 ```
 
 ## Architecture
