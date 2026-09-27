@@ -1,7 +1,8 @@
 """Structural comparison between two ONNX models."""
 
 from onnx import ModelProto
-from ..core.model_loader import model_summary, list_nodes
+
+from ..core.model_loader import list_nodes, model_summary
 
 
 def diff(model_a: ModelProto, model_b: ModelProto) -> dict:

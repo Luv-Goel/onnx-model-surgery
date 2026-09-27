@@ -1,13 +1,15 @@
 """Inspection tools — pretty-print model structure and stats."""
 
-from onnx import ModelProto
 import json
+
+from onnx import ModelProto
+
 from ..core.model_loader import (
-    model_summary,
-    list_nodes,
-    list_inputs,
-    list_outputs,
     list_initializers,
+    list_inputs,
+    list_nodes,
+    list_outputs,
+    model_summary,
 )
 from ..core.visualization import ascii_graph, op_stats
 
@@ -48,7 +50,7 @@ def inspect(model: ModelProto, detailed: bool = False) -> str:
         lines.append("-" * 56)
         for inp in list_inputs(model):
             lines.append(
-                f"  {inp['name']:<30} {str(inp.get('shape', '?')):<20} {inp.get('dtype', '?')}"
+                f"  {inp['name']:<30} {inp.get('shape', '?')!s:<20} {inp.get('dtype', '?')}"
             )
         lines.append("")
 
@@ -57,7 +59,7 @@ def inspect(model: ModelProto, detailed: bool = False) -> str:
         lines.append("-" * 56)
         for out in list_outputs(model):
             lines.append(
-                f"  {out['name']:<30} {str(out.get('shape', '?')):<20} {out.get('dtype', '?')}"
+                f"  {out['name']:<30} {out.get('shape', '?')!s:<20} {out.get('dtype', '?')}"
             )
         lines.append("")
 

@@ -1,8 +1,9 @@
 """Core ONNX model loading and parsing utilities."""
 
+from pathlib import Path
+
 import onnx
 from onnx import ModelProto, ValueInfoProto
-from pathlib import Path
 
 
 def load_model(path: str | Path) -> ModelProto:

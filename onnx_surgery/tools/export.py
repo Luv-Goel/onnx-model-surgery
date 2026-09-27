@@ -1,7 +1,8 @@
 """Export tools — serialize cleaned ONNX models back to disk."""
 
-from onnx import ModelProto
 from pathlib import Path
+
+from onnx import ModelProto
 
 
 def export(model: ModelProto, path: str | Path) -> str:
@@ -35,11 +36,12 @@ def validate(model: ModelProto) -> list[str]:
 
     Returns a list of warning/error messages. Empty list = valid model.
     """
+    import contextlib
+    import io
+
     import onnx
     import onnx.checker
     from onnx.checker import ValidationError
-    import io
-    import contextlib
 
     issues = []
     try:

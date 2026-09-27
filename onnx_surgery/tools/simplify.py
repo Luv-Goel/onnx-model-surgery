@@ -1,7 +1,8 @@
 """Model simplification — constant folding, op removal, graph cleanup."""
 
-from onnx import ModelProto, TensorProto
 import numpy as np
+from onnx import ModelProto, TensorProto
+
 from .export import optimize
 
 

@@ -1,15 +1,17 @@
 """HTML report generation for ONNX models."""
 
+import json
+
 from onnx import ModelProto
+
 from ..core.model_loader import (
-    model_summary,
-    list_nodes,
-    list_inputs,
-    list_outputs,
     list_initializers,
+    list_inputs,
+    list_nodes,
+    list_outputs,
+    model_summary,
 )
 from .flops import estimate_flops, format_flops, format_params
-import json
 
 
 def _shape_str(s):

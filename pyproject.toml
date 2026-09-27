@@ -50,6 +50,11 @@ Repository = "https://github.com/Luv-Goel/onnx-model-surgery"
 
 [project.scripts]
 onnx-surgery = "onnx_surgery.cli.main:main"
+oms = "onnx_surgery.cli.main:main"
 
 [tool.setuptools.packages.find]
 where = ["."]
+
+[tool.ruff.lint]
+ignore = [ "BLE001", "SIM115" ]
+

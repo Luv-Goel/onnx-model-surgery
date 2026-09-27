@@ -22,7 +22,8 @@ from pathlib import Path
 from typing import Any
 
 import numpy as np
-from onnx import TensorProto, ModelProto, numpy_helper, save as onnx_save
+from onnx import ModelProto, TensorProto, numpy_helper
+from onnx import save as onnx_save
 
 from ..core.model_loader import load_model as _load_model
 
@@ -171,9 +172,7 @@ def _to_fp16(arr: np.ndarray, min_positive: float = 1e-7) -> np.ndarray:
 def _recurse_subgraph(graph_proto: Any, target_dtype: int, min_positive: float) -> None:
     """Recurse into nested subgraphs (e.g. If/Loop/Scan nodes)."""
     for init in graph_proto.initializer:
-        if init.data_type == TensorProto.FLOAT and target_dtype == TensorProto.FLOAT16:
-            _cast_initializer(init, target_dtype, min_positive)
-        elif (
+        if init.data_type == TensorProto.FLOAT and target_dtype == TensorProto.FLOAT16 or (
             init.data_type == TensorProto.FLOAT16 and target_dtype == TensorProto.FLOAT
         ):
             _cast_initializer(init, target_dtype, min_positive)
@@ -358,8 +357,8 @@ def quantize_model_file(
 
 
 __all__ = [
-    "convert_to_fp16",
     "convert_model_precision",
+    "convert_to_fp16",
     "quantize_int8",
     "quantize_model_file",
 ]

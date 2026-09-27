@@ -1,8 +1,8 @@
 """FLOPs, MACs, and parameter count estimation for ONNX models."""
 
 from onnx import ModelProto
-from ..core.model_loader import model_summary
 
+from ..core.model_loader import model_summary
 
 # Estimated FLOPs per operation type (multiply-add = 2 FLOPs)
 # These are approximations — real values depend on tensor shapes.

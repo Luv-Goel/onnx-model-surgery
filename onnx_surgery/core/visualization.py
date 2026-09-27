@@ -1,6 +1,7 @@
 """ASCII and optional Graphviz visualization of ONNX model graphs."""
 
 from onnx import ModelProto
+
 from .graph import SurgeryGraph
 
 
@@ -87,7 +88,7 @@ def generate_graphviz(model: ModelProto, output_path: str | None = None) -> str 
     Otherwise returns the DOT source string.
     """
     try:
-        import graphviz  # noqa: F401
+        import graphviz
     except ImportError:
         return _dot_source(model)
 

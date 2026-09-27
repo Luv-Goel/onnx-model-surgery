@@ -20,6 +20,7 @@ Usage::
 from __future__ import annotations
 
 from onnx import ModelProto
+
 from .diff import diff
 
 

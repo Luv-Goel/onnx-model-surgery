@@ -113,3 +113,11 @@ def test_prune_by_threshold(simple_model):
     from onnx_surgery.tools.prune import prune_by_threshold
     result = prune_by_threshold(simple_model, min_node_count=4)
     assert len(result.graph.node) <= 3
+
+def test_strip_doc_strings(simple_model):
+    from onnx_surgery.tools.prune import strip_doc_strings
+    simple_model.doc_string = "Test doc string"
+    simple_model.graph.node[0].doc_string = "Node doc string"
+    stripped = strip_doc_strings(simple_model)
+    assert stripped.doc_string == ""
+    assert stripped.graph.node[0].doc_string == ""

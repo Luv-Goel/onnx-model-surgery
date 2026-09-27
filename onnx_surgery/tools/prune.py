@@ -1,6 +1,7 @@
 """Node and subgraph pruning tools for ONNX models."""
 
 from onnx import ModelProto
+
 from ..core.graph import SurgeryGraph
 
 
@@ -106,3 +107,19 @@ def prune_by_threshold(model: ModelProto, min_node_count: int = 1) -> ModelProto
         graph.remove_node(idx)
 
     return graph.to_model(model)
+
+def strip_doc_strings(model: ModelProto) -> ModelProto:
+    """Remove doc_string from the model and all its nodes."""
+    new_model = ModelProto()
+    new_model.CopyFrom(model)
+    new_model.doc_string = ""
+    new_model.graph.doc_string = ""
+    for node in new_model.graph.node:
+        node.doc_string = ""
+    for val in new_model.graph.input:
+        val.doc_string = ""
+    for val in new_model.graph.output:
+        val.doc_string = ""
+    for val in new_model.graph.value_info:
+        val.doc_string = ""
+    return new_model

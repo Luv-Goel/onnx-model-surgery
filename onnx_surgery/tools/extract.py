@@ -1,6 +1,7 @@
 """Subgraph extraction — slice a model between specified nodes."""
 
 from onnx import ModelProto, helper
+
 from ..core.graph import SurgeryGraph
 
 

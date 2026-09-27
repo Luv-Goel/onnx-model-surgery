@@ -1,6 +1,7 @@
 """Operation patching — replace or modify individual ONNX nodes."""
 
 from onnx import ModelProto, helper
+
 from ..core.graph import SurgeryGraph
 
 

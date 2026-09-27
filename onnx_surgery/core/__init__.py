@@ -1,26 +1,26 @@
 """Core module exports."""
 
+from .graph import GraphNode, SurgeryGraph
 from .model_loader import (
+    list_initializers,
+    list_inputs,
+    list_nodes,
+    list_outputs,
     load_model,
     model_summary,
-    list_nodes,
-    list_inputs,
-    list_outputs,
-    list_initializers,
 )
-from .graph import SurgeryGraph, GraphNode
-from .visualization import ascii_graph, op_stats, generate_graphviz
+from .visualization import ascii_graph, generate_graphviz, op_stats
 
 __all__ = [
+    "GraphNode",
+    "SurgeryGraph",
+    "ascii_graph",
+    "generate_graphviz",
+    "list_initializers",
+    "list_inputs",
+    "list_nodes",
+    "list_outputs",
     "load_model",
     "model_summary",
-    "list_nodes",
-    "list_inputs",
-    "list_outputs",
-    "list_initializers",
-    "SurgeryGraph",
-    "GraphNode",
-    "ascii_graph",
     "op_stats",
-    "generate_graphviz",
 ]

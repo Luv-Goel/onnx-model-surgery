@@ -24,19 +24,24 @@ from pathlib import Path
 
 import numpy as np
 
-from ..core import load_model, ascii_graph, op_stats
-from ..tools.inspect import inspect, to_json
-from ..tools.prune import prune_nodes, strip_initializers, prune_by_threshold
-from ..tools.export import export, validate as validate_model, optimize
-from ..tools.flops import estimate_flops, format_flops, format_params
+from ..core import ascii_graph, load_model, op_stats
 from ..tools.diff import diff, format_diff
-from ..tools.extract import extract_subgraph
-from ..tools.simplify import simplify as simplify_model
-from ..tools.report import generate_html_report
-from ..tools.quantize import quantize_model_file, convert_to_fp16
 from ..tools.diff_report import generate_diff_html
+from ..tools.export import export, optimize
+from ..tools.export import validate as validate_model
+from ..tools.extract import extract_subgraph
+from ..tools.flops import estimate_flops, format_flops, format_params
+from ..tools.inspect import inspect, to_json
 from ..tools.patch import rename_tensors
-
+from ..tools.prune import (
+    prune_by_threshold,
+    prune_nodes,
+    strip_doc_strings,
+    strip_initializers,
+)
+from ..tools.quantize import convert_to_fp16, quantize_model_file
+from ..tools.report import generate_html_report
+from ..tools.simplify import simplify as simplify_model
 
 VERSION = "0.2.0"
 
@@ -115,6 +120,11 @@ Examples:
         choices=["none", "basic", "extended"],
         default="basic",
         help="Optimization level (default: basic)",
+    )
+    strip_p.add_argument(
+        "--strip-docs",
+        action="store_true",
+        help="Strip doc_strings from model, graph, and nodes",
     )
 
     # validate
@@ -334,6 +344,8 @@ Examples:
     elif args.command == "strip":
         try:
             result = strip_initializers(model)
+            if args.strip_docs:
+                result = strip_doc_strings(result)
             result = optimize(result, level=args.optimize)
             path = export(result, args.output)
             print("  Stripped initializers, removed Identity nodes.")
@@ -366,7 +378,7 @@ Examples:
         print(
             f"  Parameter Memory:       {flops_data['params_size_mb']:.1f} MB (float32)"
         )
-        print("")
+        print()
         if flops_data["flops_by_op"]:
             print("  Per-Operator FLOPs:")
             max_flops = (
