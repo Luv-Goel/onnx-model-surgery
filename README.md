@@ -76,15 +76,15 @@ oms strip model.onnx --strip-docs -o cleaned.onnx
 
 ```mermaid
 graph TD;
-    CLI[CLI (oms)] --> Core[Core Engine];
+    CLI["CLI (oms)"] --> Core["Core Engine"];
     Core --> Tools;
-    Tools --> Prune[Pruning];
-    Tools --> Quantize[Quantization];
-    Tools --> Simplify[Simplification];
-    Tools --> Extract[Extraction];
-    Tools --> Inspect[Inspection];
+    Tools --> Prune["Pruning"];
+    Tools --> Quantize["Quantization"];
+    Tools --> Simplify["Simplification"];
+    Tools --> Extract["Extraction"];
+    Tools --> Inspect["Inspection"];
     
-    Prune --> Output[Optimized ONNX];
+    Prune --> Output["Optimized ONNX"];
     Quantize --> Output;
     Simplify --> Output;
     Extract --> Output;
