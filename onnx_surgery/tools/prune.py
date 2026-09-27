@@ -108,6 +108,7 @@ def prune_by_threshold(model: ModelProto, min_node_count: int = 1) -> ModelProto
 
     return graph.to_model(model)
 
+
 def strip_doc_strings(model: ModelProto) -> ModelProto:
     """Remove doc_string from the model and all its nodes."""
     new_model = ModelProto()

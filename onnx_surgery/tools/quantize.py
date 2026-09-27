@@ -172,8 +172,13 @@ def _to_fp16(arr: np.ndarray, min_positive: float = 1e-7) -> np.ndarray:
 def _recurse_subgraph(graph_proto: Any, target_dtype: int, min_positive: float) -> None:
     """Recurse into nested subgraphs (e.g. If/Loop/Scan nodes)."""
     for init in graph_proto.initializer:
-        if init.data_type == TensorProto.FLOAT and target_dtype == TensorProto.FLOAT16 or (
-            init.data_type == TensorProto.FLOAT16 and target_dtype == TensorProto.FLOAT
+        if (
+            init.data_type == TensorProto.FLOAT
+            and target_dtype == TensorProto.FLOAT16
+            or (
+                init.data_type == TensorProto.FLOAT16
+                and target_dtype == TensorProto.FLOAT
+            )
         ):
             _cast_initializer(init, target_dtype, min_positive)
     for node in graph_proto.node:

@@ -28,6 +28,12 @@
 
 ## 🚀 Quick Start
 
+<div align="center">
+  <img src="assets/demo.svg" alt="FLOPs CLI output screenshot" width="600">
+  <br>
+  <img src="assets/diff_demo.svg" alt="Diff CLI output screenshot" width="600">
+</div>
+
 ### Installation
 
 ```bash
